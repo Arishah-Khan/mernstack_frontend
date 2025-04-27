@@ -13,7 +13,7 @@ const TaskBoard = () => {
 
   const apiUrl =
   window.location.hostname === "localhost"
-    ? "http://localhost:5173"
+    ? "http://localhost:5000"
     : "mernstackbackend-production-86ac.up.railway.app";
   // Fetch tasks from API
   const fetchTasks = async () => {

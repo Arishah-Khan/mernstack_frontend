@@ -20,11 +20,14 @@ const AdminDashboard = () => {
 
     const fetchData = async () => {
       try {
-        const apiUrl = "mernstackbackend-production-86ac.up.railway.app/api";
+        const apiUrl =
+        window.location.hostname === "localhost"
+          ? "http://localhost:5000"
+          : "mernstackbackend-production-86ac.up.railway.app";
 
         const [usersResponse, productsResponse] = await Promise.all([
-          axios.get(`${apiUrl}/admin/users`),
-          axios.get(`${apiUrl}/admin/products`),
+          axios.get(`${apiUrl}/api/admin/users`),
+          axios.get(`${apiUrl}/api/admin/products`),
         ]);
 
         setUsers(usersResponse.data.users);
