@@ -90,7 +90,7 @@ const Navbar = () => {
   }
 
   return (
-    <header className="bg-[#222d52] text-[#fdffff] sticky top-0 z-50 shadow-lg">
+    <header className="bg-[#211e3b] text-[#fdffff] sticky top-0 z-50 shadow-lg">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
@@ -191,13 +191,6 @@ const Navbar = () => {
               )}
             </div>
 
-            {/* Mobile Menu Button */}
-            <button
-              className="md:hidden p-2 hover:bg-[#000000]/20 rounded-full transition-colors"
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-            >
-              {showMobileMenu ? <X className="h-5 w-5 text-[#fdffff]" /> : <Menu className="h-5 w-5 text-[#fdffff]" />}
-            </button>
           </div>
         </div>
 

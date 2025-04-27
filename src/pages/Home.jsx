@@ -4,116 +4,145 @@ import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import TaskModal from '../components/taskModels';
 import { ToastContainer, toast } from 'react-toastify';
 import { BounceLoader } from 'react-spinners';
+import { motion } from 'framer-motion';
+import { useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 
 const TaskBoard = () => {
-  const [tasks, setTasks] = useState([]); 
+  const [tasks, setTasks] = useState([]);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [toastId, setToastId] = useState(null);  
+  const navigate = useNavigate();
 
   const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
-  // Fetch tasks from API
+  const isLoggedIn = useSelector((state) => state.auth.isLoggedIn);
+
   const fetchTasks = async () => {
     setLoading(true);
     try {
       const response = await axios.get(`${apiUrl}/tasks`);
-      console.log(response.data);  
-      if (Array.isArray(response.data)) {  // Check if the response is an array
-        setTasks(response.data);  // Only set tasks if it's an array
+      if (Array.isArray(response.data)) {
+        setTasks(response.data);
       } else {
-        toast.error('Invalid task data!');
+        toast.error('Invalid task data received from server!');
       }
     } catch (error) {
       console.error('Error fetching tasks:', error);
-      toast.error('Failed to fetch tasks!');
+      toast.error('Failed to fetch tasks from server!');
     } finally {
       setLoading(false);
     }
   };
 
-  // Add a new task
   const handleAddTask = async (taskData) => {
+    if (!isLoggedIn) {
+      toast.error('Please log in to add tasks!');
+      navigate('/login');
+      return;
+    }
+
     setLoading(true);
+    const currentToastId = toast.loading('Adding task...', { autoClose: false });
+    setToastId(currentToastId); 
     try {
       const response = await axios.post(`${apiUrl}/tasks`, taskData);
       setTasks((prevTasks) => [...prevTasks, response.data]);
-      toast.success('Task added successfully!');
-      setIsModalOpen(false);
+      toast.update(currentToastId, {
+        render: 'Task added successfully!',
+        type: 'success',
+        autoClose: 3000,
+      });
     } catch (error) {
       console.error('Error adding task:', error);
-      toast.error('Error adding task!');
+      toast.update(currentToastId, {
+        render: 'Error adding task!',
+        type: 'error',
+        autoClose: 3000,
+      });
     } finally {
       setLoading(false);
+      setTimeout(() => toast.dismiss(currentToastId), 3500); 
+      setIsModalOpen(false); 
     }
   };
 
-  // Update an existing task
   const handleUpdateTask = async (taskData) => {
     setLoading(true);
+    const currentToastId = toast.loading('Updating task...', { autoClose: false });
+    setToastId(currentToastId);
     try {
       const response = await axios.put(`${apiUrl}/tasks/${taskData._id}`, taskData);
       setTasks((prevTasks) =>
         prevTasks.map((task) => (task._id === taskData._id ? response.data : task))
       );
-      toast.success('Task updated successfully!');
-      setIsModalOpen(false);
-      setTaskToEdit(null);
+      toast.update(currentToastId, {
+        render: 'Task updated successfully!',
+        type: 'success',
+        autoClose: 3000,
+      });
     } catch (error) {
       console.error('Error updating task:', error);
-      toast.error('Error updating task!');
+      toast.update(currentToastId, {
+        render: 'Error updating task!',
+        type: 'error',
+        autoClose: 3000,
+      });
     } finally {
       setLoading(false);
+      setTimeout(() => toast.dismiss(currentToastId), 3500);
+      setIsModalOpen(false);
+      setTaskToEdit(null);
     }
   };
 
-  // Delete a task
   const handleDeleteTask = async (taskId) => {
     setLoading(true);
+    const currentToastId = toast.loading('Deleting task...', { autoClose: false });
+    setToastId(currentToastId);
     try {
       await axios.delete(`${apiUrl}/tasks/${taskId}`);
       setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
-      toast.success('Task deleted successfully!');
+      toast.update(currentToastId, {
+        render: 'Task deleted successfully!',
+        type: 'success',
+        autoClose: 3000,
+      });
     } catch (error) {
       console.error('Error deleting task:', error);
-      toast.error('Error deleting task!');
+      toast.update(currentToastId, {
+        render: 'Error deleting task!',
+        type: 'error',
+        autoClose: 3000,
+      });
     } finally {
       setLoading(false);
+      setTimeout(() => toast.dismiss(currentToastId), 3500); 
     }
   };
 
-  // Handle drag and drop reordering of tasks
   const onDragEnd = async (result) => {
     const { destination, source } = result;
-
     if (!destination) return;
+    if (source.index === destination.index && source.droppableId === destination.droppableId) return;
 
-    if (
-      source.droppableId === destination.droppableId &&
-      source.index === destination.index
-    ) {
-      return;
-    }
+    const updatedTasks = [...tasks];
+    const [movedTask] = updatedTasks.splice(source.index, 1);
+    movedTask.status = destination.droppableId;
+    updatedTasks.splice(destination.index, 0, movedTask);
+    setTasks(updatedTasks);
 
-    // Ensure tasks is always an array before proceeding
-    if (Array.isArray(tasks)) {
-      const updatedTasks = [...tasks];
-      const [movedTask] = updatedTasks.splice(source.index, 1);
-      movedTask.status = destination.droppableId;
-
-      updatedTasks.splice(destination.index, 0, movedTask);
-
-      setTasks(updatedTasks);
-
-      try {
-        await axios.put(`${apiUrl}/tasks/${movedTask._id}`, movedTask);
-        toast.success('Task status updated!');
-      } catch (error) {
-        console.error('Error updating task status:', error);
-        toast.error('Error updating task status!');
-      }
-    } else {
-      console.error('Tasks is not an array.');
+    try {
+      await axios.put(`${apiUrl}/tasks/${movedTask._id}`, movedTask);
+      const currentToastId = toast.success('Task status updated successfully!');
+      setTimeout(() => {
+        toast.dismiss(currentToastId);
+      }, 3000);
+    } catch (error) {
+      console.error('Error updating task status:', error);
+      toast.error('Error updating task status!');
     }
   };
 
@@ -122,89 +151,107 @@ const TaskBoard = () => {
   }, []);
 
   return (
-    <div className="task-board-container p-6 bg-gray-100 min-h-screen">
-      <header className="flex justify-between items-center mb-6">
-        <h1 className="text-4xl font-bold text-[#222d52]">TaskifyX</h1>
-        <button
-          onClick={() => {
-            setTaskToEdit(null);
-            setIsModalOpen(true);
-          }}
-          className="px-8 py-3 bg-[#d2b68a] text-[#222d52] rounded-lg font-semibold hover:bg-[#eee5d9] transition-colors duration-300"
-        >
-          Add Task
-        </button>
-      </header>
+    <div className="flex flex-col items-center justify-center min-h-screen bg-[#222d52] p-6">
+<motion.header
+  initial={{ opacity: 0, y: -50 }}
+  animate={{ opacity: 1, y: 0 }}
+  className="flex flex-col sm:flex-row justify-between items-center w-full max-w-7xl mb-8"
+>
+  <h1 className="text-3xl sm:text-4xl font-bold text-[#d2b68a] text-center sm:text-left">
+    TaskifyX
+  </h1>
+  <button
+    onClick={() => {
+      if (isLoggedIn) {
+        setTaskToEdit(null);
+        setIsModalOpen(true);
+      } else {
+        toast.error('Please log in to add tasks!');
+        navigate('/login');
+      }
+    }}
+    className="mt-4 sm:mt-0 sm:px-6 px-4 py-2 bg-[#d2b68a] text-[#222d52] rounded-lg font-semibold hover:bg-[#c5a97d] transition-colors w-full sm:w-auto"
+  >
+    Add Task
+  </button>
+</motion.header>
 
-      {loading && (
-        <div className="flex justify-center items-center">
-          <BounceLoader color="#3498db" loading={loading} size={60} />
+
+      {loading ? (
+        <div className="flex justify-center items-center h-60">
+          <BounceLoader color="#d2b68a" loading={loading} size={60} />
         </div>
+      ) : (
+        <DragDropContext onDragEnd={onDragEnd}>
+          <motion.div
+            className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 w-full max-w-7xl "
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+          >
+            {['To Do', 'In Progress', 'Done'].map((status) => (
+              <Droppable key={status} droppableId={status}>
+  {(provided) => (
+    <div
+      ref={provided.innerRef}
+      {...provided.droppableProps}
+      className="bg-[#211e3b] p-4 rounded-lg shadow-lg border-2 border-[#d2b68a]" // Added border class here
+    >
+      <h2 className="text-xl font-bold text-white mb-4">{status}</h2>
+      {Array.isArray(tasks) && tasks
+        .filter((task) => task.status === status)
+        .map((task, index) => (
+          <Draggable key={task._id} draggableId={task._id} index={index}>
+            {(provided) => (
+              <motion.div
+                ref={provided.innerRef}
+                {...provided.draggableProps}
+                {...provided.dragHandleProps}
+                className="bg-[#222d52] p-4 mb-4 rounded-lg shadow hover:bg-[#485587] transition-colors"
+                whileHover={{ scale: 1.02 }}
+              >
+                <h3 className="text-lg font-semibold text-[#d2b68a]">{task.title}</h3>
+                <p className="text-sm text-gray-300">{task.description}</p>
+                <div className="flex space-x-2 mt-4">
+                  <button
+                    onClick={() => {
+                      setTaskToEdit(task);
+                      setIsModalOpen(true);
+                    }}
+                    className="bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition-colors duration-300 transform hover:scale-105"
+                  >
+                    Edit
+                  </button>
+                  <button
+                    onClick={() => handleDeleteTask(task._id)}
+                    className="bg-red-500 text-white py-2 px-4 rounded-lg hover:bg-red-600 transition-colors duration-300 transform hover:scale-105"
+                  >
+                    Delete
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </Draggable>
+        ))}
+      {provided.placeholder}
+    </div>
+  )}
+</Droppable>
+
+            ))}
+          </motion.div>
+        </DragDropContext>
       )}
 
-      <DragDropContext onDragEnd={onDragEnd}>
-        <div className="flex space-x-6">
-          {['To Do', 'In Progress', 'Done'].map((status) => (
-            <Droppable key={status} droppableId={status}>
-              {(provided) => (
-                <div
-                  ref={provided.innerRef}
-                  {...provided.droppableProps}
-                  className="task-column bg-white p-4 rounded-lg shadow-lg w-1/3"
-                >
-                  <h2 className="text-xl font-semibold mb-4">{status}</h2>
-                  {Array.isArray(tasks) && tasks
-                    .filter((task) => task.status === status)
-                    .map((task, index) => (
-                      <Draggable key={task._id} draggableId={task._id} index={index}>
-                        {(provided) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            {...provided.dragHandleProps}
-                            className="task-card bg-gray-50 p-4 mb-4 rounded-lg shadow hover:bg-gray-100 transition duration-300"
-                          >
-                            <h3 className="font-semibold text-lg">{task.title}</h3>
-                            <p className="text-sm text-gray-600">{task.description}</p>
-                            <div className="flex space-x-2 mt-2">
-                              <button
-                                onClick={() => {
-                                  setTaskToEdit(task);
-                                  setIsModalOpen(true);
-                                }}
-                                className="bg-yellow-500 text-white py-1 px-3 rounded-md hover:bg-yellow-600 transition duration-300"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() => handleDeleteTask(task._id)}
-                                className="bg-red-500 text-white py-1 px-3 rounded-md hover:bg-red-600 transition duration-300"
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          ))}
-        </div>
-      </DragDropContext>
-
-      <TaskModal
-        isOpen={isModalOpen}
-        onClose={() => {
-          setIsModalOpen(false);
-          setTaskToEdit(null);
-        }}
-        onSubmit={handleAddTask}
-        taskToEdit={taskToEdit}
-        onUpdate={handleUpdateTask}
-      />
+      {isModalOpen && (
+        <TaskModal
+          isOpen={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onSubmit={handleAddTask}
+          taskToEdit={taskToEdit}
+          onUpdate={handleUpdateTask}
+        />
+      )}
 
       <ToastContainer autoClose={3000} />
     </div>
