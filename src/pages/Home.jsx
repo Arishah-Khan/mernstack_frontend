@@ -157,9 +157,8 @@ const TaskBoard = () => {
   animate={{ opacity: 1, y: 0 }}
   className="flex flex-col sm:flex-row justify-between items-center w-full max-w-7xl mb-8"
 >
-  <h1 className="text-3xl sm:text-4xl font-bold text-[#d2b68a] text-center sm:text-left">
-    TaskifyX
-  </h1>
+  <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-[#d2b68a] text-center sm:text-left">
+  TaskifyX - Your Task Manager  </h1>
   <button
     onClick={() => {
       if (isLoggedIn) {
