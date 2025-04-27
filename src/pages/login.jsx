@@ -7,10 +7,8 @@ import { ClipLoader } from "react-spinners";
 import Joi from "joi";
 import "react-toastify/dist/ReactToastify.css"; 
 
-const apiUrl =
-  window.location.hostname === "localhost"
-    ? "http://localhost:5000"
-    : "mernstackbackend-production-86ac.up.railway.app";
+const apiUrl = "mernstackbackend-production-86ac.up.railway.app";
+
 const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);

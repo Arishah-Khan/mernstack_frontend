@@ -5,10 +5,8 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { PulseLoader } from "react-spinners";
 
-const apiUrl =
-  window.location.hostname === "localhost"
-    ? "http://localhost:5000"
-    : "mernstackbackend-production-86ac.up.railway.app";
+const apiUrl = "mernstackbackend-production-86ac.up.railway.app";
+
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);

@@ -6,10 +6,7 @@ import Cookies from "js-cookie";
 import { logout, setAdmin, setUser } from "../store/authSlice";
 import { ClipLoader } from "react-spinners";
 
-const apiUrl =
-  window.location.hostname === "localhost"
-    ? "http://localhost:5173"
-    : "mernstackbackend-production-86ac.up.railway.app";
+const apiUrl = "mernstackbackend-production-86ac.up.railway.app";
 
 const Navbar = () => {
   const location = useLocation();

@@ -11,10 +11,8 @@ const TaskBoard = () => {
   const [taskToEdit, setTaskToEdit] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const apiUrl =
-  window.location.hostname === "localhost"
-    ? "http://localhost:5000"
-    : "mernstackbackend-production-86ac.up.railway.app";
+  const apiUrl = "mernstackbackend-production-86ac.up.railway.app";
+
   // Fetch tasks from API
   const fetchTasks = async () => {
     setLoading(true);

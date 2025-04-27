@@ -20,10 +20,8 @@ const AdminDashboard = () => {
 
     const fetchData = async () => {
       try {
-        const apiUrl =
-        window.location.hostname === "localhost"
-          ? "http://localhost:5000"
-          : "mernstackbackend-production-86ac.up.railway.app";
+        const apiUrl = "mernstackbackend-production-86ac.up.railway.app";
+
 
         const [usersResponse, productsResponse] = await Promise.all([
           axios.get(`${apiUrl}/api/admin/users`),
