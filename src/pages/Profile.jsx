@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { PulseLoader } from "react-spinners";
 
-const apiUrl = import.meta.env.VITE_API_BASE_URL;
+const apiUrl = "mernstackbackend-production-86ac.up.railway.app/api";
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);

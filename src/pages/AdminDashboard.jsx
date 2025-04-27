@@ -20,7 +20,7 @@ const AdminDashboard = () => {
 
     const fetchData = async () => {
       try {
-        const apiUrl = import.meta.env.VITE_API_BASE_URL;
+        const apiUrl = "mernstackbackend-production-86ac.up.railway.app/api";
 
         const [usersResponse, productsResponse] = await Promise.all([
           axios.get(`${apiUrl}/admin/users`),

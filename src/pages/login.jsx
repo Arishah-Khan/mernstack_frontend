@@ -7,7 +7,7 @@ import { ClipLoader } from "react-spinners";
 import Joi from "joi";
 import "react-toastify/dist/ReactToastify.css"; 
 
-const apiUrl = import.meta.env.VITE_API_BASE_URL;
+const apiUrl = "mernstackbackend-production-86ac.up.railway.app/api";
 
 const Login = () => {
   const navigate = useNavigate();

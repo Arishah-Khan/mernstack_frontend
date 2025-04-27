@@ -11,7 +11,7 @@ const TaskBoard = () => {
   const [taskToEdit, setTaskToEdit] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const apiUrl = import.meta.env.VITE_API_BASE_URL;
+  const apiUrl = "mernstackbackend-production-86ac.up.railway.app/api";
 
   // Fetch tasks from API
   const fetchTasks = async () => {
