@@ -9,7 +9,7 @@ import Login from "./pages/login";
 import store from "./store/authStore";
 import SignupPage from "./pages/signUp";
 import { Toaster } from "react-hot-toast";
-import TaskBoard from "./pages/Home";
+// import TaskBoard from "./pages/Home";
 
 function App() {
   return (
@@ -19,7 +19,7 @@ function App() {
           <Navbar />
           <main className="flex-grow">
             <Routes>
-              <Route path="/" element={<TaskBoard />} />
+              {/* <Route path="/" element={<TaskBoard />} /> */}
               <Route path="/login" element={<Login />} />
               <Route path="/signup" element={<SignupPage />} />
               <Route path="/profile" element={<Profile />} />
