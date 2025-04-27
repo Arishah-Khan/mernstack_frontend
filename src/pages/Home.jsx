@@ -6,19 +6,19 @@ import { ToastContainer, toast } from 'react-toastify';
 import { BounceLoader } from 'react-spinners';
 
 const TaskBoard = () => {
-  const [tasks, setTasks] = useState([]);  // Ensure tasks is initialized as an empty array
+  const [tasks, setTasks] = useState([]); 
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [taskToEdit, setTaskToEdit] = useState(null);
   const [loading, setLoading] = useState(false);
 
-  const apiUrl = "mernstackbackend-production-86ac.up.railway.app";
+  const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
   // Fetch tasks from API
   const fetchTasks = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${apiUrl}/api/tasks`);
-      console.log(response.data);  // Log to verify the data structure
+      const response = await axios.get(`${apiUrl}/tasks`);
+      console.log(response.data);  
       if (Array.isArray(response.data)) {  // Check if the response is an array
         setTasks(response.data);  // Only set tasks if it's an array
       } else {
@@ -36,7 +36,7 @@ const TaskBoard = () => {
   const handleAddTask = async (taskData) => {
     setLoading(true);
     try {
-      const response = await axios.post(`${apiUrl}/api/tasks`, taskData);
+      const response = await axios.post(`${apiUrl}/tasks`, taskData);
       setTasks((prevTasks) => [...prevTasks, response.data]);
       toast.success('Task added successfully!');
       setIsModalOpen(false);
@@ -52,7 +52,7 @@ const TaskBoard = () => {
   const handleUpdateTask = async (taskData) => {
     setLoading(true);
     try {
-      const response = await axios.put(`${apiUrl}/api/tasks/${taskData._id}`, taskData);
+      const response = await axios.put(`${apiUrl}/tasks/${taskData._id}`, taskData);
       setTasks((prevTasks) =>
         prevTasks.map((task) => (task._id === taskData._id ? response.data : task))
       );
@@ -71,7 +71,7 @@ const TaskBoard = () => {
   const handleDeleteTask = async (taskId) => {
     setLoading(true);
     try {
-      await axios.delete(`${apiUrl}/api/tasks/${taskId}`);
+      await axios.delete(`${apiUrl}/tasks/${taskId}`);
       setTasks((prevTasks) => prevTasks.filter((task) => task._id !== taskId));
       toast.success('Task deleted successfully!');
     } catch (error) {
@@ -106,7 +106,7 @@ const TaskBoard = () => {
       setTasks(updatedTasks);
 
       try {
-        await axios.put(`${apiUrl}/api/tasks/${movedTask._id}`, movedTask);
+        await axios.put(`${apiUrl}/tasks/${movedTask._id}`, movedTask);
         toast.success('Task status updated!');
       } catch (error) {
         console.error('Error updating task status:', error);

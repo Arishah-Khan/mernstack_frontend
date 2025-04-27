@@ -6,7 +6,7 @@ import { ClipLoader } from "react-spinners";
 import Joi from "joi";
 import "react-toastify/dist/ReactToastify.css";
 
-const apiUrl = "mernstackbackend-production-86ac.up.railway.app";
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 
 const SignupPage = () => {
@@ -106,7 +106,7 @@ const SignupPage = () => {
     });
 
     try {
-      await axios.post(`${apiUrl}/api/auth/signup`, data, {
+      await axios.post(`${apiUrl}/auth/signup`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },

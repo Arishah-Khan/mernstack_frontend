@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { PulseLoader } from "react-spinners";
 
-const apiUrl = "mernstackbackend-production-86ac.up.railway.app";
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 
 const Profile = () => {
@@ -33,7 +33,7 @@ const Profile = () => {
         }
 
         const response = await axios.get(
-          `${apiUrl}/api/auth/current-user`,
+          `${apiUrl}/auth/current-user`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -81,7 +81,7 @@ const Profile = () => {
       const updatedData = { username, address, country, city };
 
       const response = await axios.put(
-        `${apiUrl}/api/auth/update-profile`,
+        `${apiUrl}/auth/update-profile`,
         updatedData,
         {
           headers: {

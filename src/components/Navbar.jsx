@@ -6,7 +6,7 @@ import Cookies from "js-cookie";
 import { logout, setAdmin, setUser } from "../store/authSlice";
 import { ClipLoader } from "react-spinners";
 
-const apiUrl = "mernstackbackend-production-86ac.up.railway.app";
+const apiUrl = import.meta.env.VITE_API_BASE_URL;
 
 const Navbar = () => {
   const location = useLocation();
@@ -37,7 +37,7 @@ const Navbar = () => {
 
   const checkUserStatus = async () => {
     try {
-      const response = await fetch(`${apiUrl}/api/auth/current-user`, {
+      const response = await fetch(`${apiUrl}/auth/current-user`, {
         method: "GET",
         headers: {
           Authorization: `Bearer ${Cookies.get("jwt")}`,
@@ -62,7 +62,7 @@ const Navbar = () => {
   const logoutUser = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${apiUrl}/api/auth/logout`, {
+      const response = await fetch(`${apiUrl}/auth/logout`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${Cookies.get("jwt")}`,
