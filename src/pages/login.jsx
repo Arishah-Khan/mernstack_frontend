@@ -7,8 +7,10 @@ import { ClipLoader } from "react-spinners";
 import Joi from "joi";
 import "react-toastify/dist/ReactToastify.css"; 
 
-const apiUrl = "mernstackbackend-production-86ac.up.railway.app/api";
-
+const apiUrl =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5173"
+    : "mernstackbackend-production-86ac.up.railway.app";
 const Login = () => {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -58,7 +60,7 @@ const Login = () => {
 
   
     try {
-      const { data } = await axios.post(`${apiUrl}/auth/login`, formData, {
+      const { data } = await axios.post(`${apiUrl}/api/auth/login`, formData, {
         withCredentials: true,
       });
 

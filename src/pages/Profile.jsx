@@ -5,7 +5,10 @@ import { useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import { PulseLoader } from "react-spinners";
 
-const apiUrl = "mernstackbackend-production-86ac.up.railway.app/api";
+const apiUrl =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5173"
+    : "mernstackbackend-production-86ac.up.railway.app";
 
 const Profile = () => {
   const [userData, setUserData] = useState(null);
@@ -32,7 +35,7 @@ const Profile = () => {
         }
 
         const response = await axios.get(
-          `${apiUrl}/auth/current-user`,
+          `${apiUrl}/api/auth/current-user`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -80,7 +83,7 @@ const Profile = () => {
       const updatedData = { username, address, country, city };
 
       const response = await axios.put(
-        `${apiUrl}/auth/update-profile`,
+        `${apiUrl}/api/auth/update-profile`,
         updatedData,
         {
           headers: {

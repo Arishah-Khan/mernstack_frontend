@@ -6,7 +6,10 @@ import { ClipLoader } from "react-spinners";
 import Joi from "joi";
 import "react-toastify/dist/ReactToastify.css";
 
-const apiUrl = "mernstackbackend-production-86ac.up.railway.app/api";
+const apiUrl =
+  window.location.hostname === "localhost"
+    ? "http://localhost:5173"
+    : "mernstackbackend-production-86ac.up.railway.app";
 
 const SignupPage = () => {
   const navigate = useNavigate();
@@ -105,7 +108,7 @@ const SignupPage = () => {
     });
 
     try {
-      await axios.post(`${apiUrl}/auth/signup`, data, {
+      await axios.post(`${apiUrl}/api/auth/signup`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
